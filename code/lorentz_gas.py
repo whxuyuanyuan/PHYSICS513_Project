@@ -30,6 +30,19 @@ def make_path(path):
             raise Exception('Problem creating output dir %s !!!\nA file with the same name probably already exists, please fix the conflict and run again.' % output_path)
 
 
+def plot_config(R, a):
+    fig = plt.gcf()
+    fig.set_size_inches(5, 5)
+    plt.plot([-a, a], [-a, -a], color='black')
+    plt.plot([a, a], [-a, a], color='black')
+    plt.plot([a, -a], [a, a], color='black')
+    plt.plot([-a, -a], [a, -a], color='black')
+    circle = plt.Circle((0, 0), R, color='black')
+    fig.gca().add_artist(circle)
+    plt.xlim([-a * 1.1, a * 1.1])
+    plt.ylim([-a * 1.1, a * 1.1])
+
+
 def norm(angle):
     if angle > pi / 2:
         norm(angle - pi)
@@ -39,7 +52,7 @@ def norm(angle):
         return angle
 
 
-def simulate(R, a, is_circle, steps, x0, y0, th0):
+def simulate(R, a, is_circle, steps, x0, y0, th0, is_plot, path):
     """
     :param R: Radius of the inner circle.
     :param a: Half length of the side of the outside square.
@@ -48,6 +61,7 @@ def simulate(R, a, is_circle, steps, x0, y0, th0):
     :param x0: Inital x-coordinate.
     :param y0: Initial y-coordinate.
     :param th0: Initial angle.
+    :param is_plot: True if make plot each step
     :return: x, y, th arrays.
     """
     x = [x0]
@@ -58,6 +72,25 @@ def simulate(R, a, is_circle, steps, x0, y0, th0):
 
     for i in range(steps):
         print 'step %d' % i
+        if is_plot:
+            # plot the trajectory
+            fig = plt.figure(figsize=(5, 5))
+            ax = fig.add_subplot(111)
+            plt.plot([-a, a], [-a, -a], color='black')
+            plt.plot([a, a], [-a, a], color='black')
+            plt.plot([a, -a], [a, a], color='black')
+            plt.plot([-a, -a], [a, -a], color='black')
+            circle = plt.Circle((0, 0), R, color='black')
+            fig.gca().add_artist(circle)
+            plt.xlim([-a * 1.1, a * 1.1])
+            plt.ylim([-a * 1.1, a * 1.1])
+            if len(x) > 2:
+                ax.plot(x[0: len(x) - 1], y[0: len(y) - 1], linestyle='--', color='blue')
+            ax.plot(x[len(x) - 2: len(x)], y[len(y) - 2: len(y)], color='red')
+            plt.axis('off')
+            fig.savefig(path + 'image%04d.jpg' % i)
+            plt.close()
+
         k = tan(th[-1])
         if not is_circle:
             l = Line(Point(x[-1], y[-1]), Point(x[-1] + cos(th[-1]) * 10.0, y[-1] + sin(th[-1]) * 10.0))
@@ -183,42 +216,34 @@ def simulate(R, a, is_circle, steps, x0, y0, th0):
 make_path('../output')
 
 ##################### Test #################################
-if True:
+if False:
     # set parameters
     a = 2.0
-    R = 1.5
+    R = 1.0
     x0 = a
     y0 = a / 3
     th0 = -np.pi * 0.8
     steps = 100
     is_circle = False
 
-    # simulate
-    x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0)
-
     # set the path
     top_path = '../output/test/'
     make_path(top_path)
+    make_path(top_path + 'images')
 
-    # plot the configuration
-    fig = plt.gcf()
-    fig.set_size_inches(5, 5)
-    plt.plot([-a, a], [-a, -a], color='black')
-    plt.plot([a, a], [-a, a], color='black')
-    plt.plot([a, -a], [a, a], color='black')
-    plt.plot([-a, -a], [a, -a], color='black')
-    circle = plt.Circle((0, 0), R, color='black')
-    fig.gca().add_artist(circle)
-    plt.xlim([-2.2, 2.2])
-    plt.ylim([-2.2, 2.2])
+    # simulate
+    x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0, True, top_path + 'images/')
+
+    plot_config(R, a)
 
     # plot the trajectory
     plt.plot(x, y, linestyle='--')
+    plt.axis('off')
     plt.savefig(top_path + 'test.pdf')
     plt.show()
 
     # save the data
-    np.save(top_path + 'x.npy', x)
+    np.save(top_path + 'x', x)
     np.save(top_path + 'y', y)
     np.save(top_path + 'th', th)
 
@@ -226,3 +251,5 @@ if True:
     x = np.load(top_path + 'x.npy')
     y = np.load(top_path + 'y.npy')
     th = np.load(top_path + 'th.npy')
+
+####################### Lyapunov ###############################
