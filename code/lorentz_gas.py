@@ -196,6 +196,10 @@ if True:
     # simulate
     x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0)
 
+    # set the path
+    top_path = '../output/test/'
+    make_path(top_path)
+
     # plot the configuration
     fig = plt.gcf()
     fig.set_size_inches(5, 5)
@@ -210,16 +214,15 @@ if True:
 
     # plot the trajectory
     plt.plot(x, y, linestyle='--')
+    plt.savefig(top_path + 'test.pdf')
     plt.show()
 
     # save the data
-    top_path = '../output/test/'
-    make_path(top_path)
     np.save(top_path + 'x.npy', x)
     np.save(top_path + 'y', y)
     np.save(top_path + 'th', th)
 
     # load the data
-    x = np.load(top_path + 'x.npy', x)
-    y = np.load(top_path + 'y.npy', y)
-    th = np.load(top_path + 'th.npy', th)
+    x = np.load(top_path + 'x.npy')
+    y = np.load(top_path + 'y.npy')
+    th = np.load(top_path + 'th.npy')
