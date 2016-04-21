@@ -85,7 +85,7 @@ def simulate(R, a, is_circle, steps, x0, y0, th0, is_plot, path):
             plt.xlim([-a * 1.1, a * 1.1])
             plt.ylim([-a * 1.1, a * 1.1])
             if len(x) > 2:
-                ax.plot(x[0: len(x) - 1], y[0: len(y) - 1], linestyle='--', color='blue')
+                ax.plot(x[0: len(x) - 1], y[0: len(y) - 1], linestyle='--', color='blue', linewidth=0.3)
             ax.plot(x[len(x) - 2: len(x)], y[len(y) - 2: len(y)], color='red')
             plt.axis('off')
             fig.savefig(path + 'image%04d.jpg' % i)
@@ -223,23 +223,23 @@ if False:
     x0 = a
     y0 = a / 3
     th0 = -np.pi * 0.8
-    steps = 100
+    steps = 10000
     is_circle = False
 
     # set the path
-    top_path = '../output/test/'
+    top_path = '../output/ergodic/'
     make_path(top_path)
     make_path(top_path + 'images')
 
     # simulate
-    x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0, True, top_path + 'images/')
+    x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0, False, top_path + 'images/')
 
     plot_config(R, a)
 
     # plot the trajectory
-    plt.plot(x, y, linestyle='--')
+    plt.plot(x, y, linewidth=0.3)
     plt.axis('off')
-    plt.savefig(top_path + 'test.pdf')
+    plt.savefig(top_path + 'ergodic.pdf')
     plt.show()
 
     # save the data
@@ -253,3 +253,97 @@ if False:
     th = np.load(top_path + 'th.npy')
 
 ####################### Lyapunov ###############################
+if True:
+    # set parameters
+    a = 2.0
+    R = 1.0
+    x0 = a
+    y0 = a / 3
+    th0 = -np.pi * 0.8
+    steps = 1000
+    is_circle = False
+
+    # set the path
+    top_path = '../output/Exp2/'
+    make_path(top_path)
+    make_path(top_path + 'images')
+
+    # simulate
+    x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0, False, top_path + 'images/')
+
+    plot_config(R, a)
+
+    # plot the trajectory
+    plt.plot(x, y, linestyle='--')
+    plt.axis('off')
+    plt.savefig(top_path + 'exp2_1.pdf')
+    plt.cla()
+
+    # save the data
+    np.save(top_path + 'x1', x)
+    np.save(top_path + 'y1', y)
+    np.save(top_path + 'th1', th)
+
+    # set parameters
+    a = 2.0
+    R = 1.0
+    x0 = a
+    y0 = a / 3
+    th0 = -np.pi * 0.8 + 0.00001
+    steps = 1000
+    is_circle = False
+
+    # simulate
+    x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0, False, top_path + 'images/')
+
+    plot_config(R, a)
+
+    # plot the trajectory
+    plt.plot(x, y, linestyle='--')
+    plt.axis('off')
+    plt.savefig(top_path + 'exp2_2.pdf')
+    plt.show()
+
+    # save the data
+    np.save(top_path + 'x2', x)
+    np.save(top_path + 'y2', y)
+    np.save(top_path + 'th2', th)
+
+##################### Test #################################
+if False:
+    # set parameters
+    a = 2.0
+    R = 1.0
+    x0 = a
+    y0 = a / 3
+    th0 = -np.pi * 0.8
+    steps = 20
+    is_circle = False
+
+    # set the path
+    top_path = '../output/Exp2/'
+    make_path(top_path)
+    make_path(top_path + 'images')
+
+    # simulate
+    x, y, th = simulate(R, a, is_circle, steps, x0, y0, th0, False, top_path + 'images/')
+
+    plot_config(R, a)
+
+    # plot the trajectory
+    plt.plot(x, y, linewidth=0.3)
+    plt.axis('off')
+    plt.savefig(top_path + 'exp2.pdf')
+    plt.show()
+
+    # save the data
+    np.save(top_path + 'x', x)
+    np.save(top_path + 'y', y)
+    np.save(top_path + 'th', th)
+
+    # load the data
+    x = np.load(top_path + 'x.npy')
+    y = np.load(top_path + 'y.npy')
+    th = np.load(top_path + 'th.npy')
+
+
