@@ -8,12 +8,19 @@
 % This package should properly format in-text
 % reference calls and reference-list numbers.
 
-\usepackage{scicite}
 % Use times if you have the font installed; otherwise, comment out the
 % following line.
-
 \usepackage{times}
-
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage{physics}
+\usepackage[english]{babel}
 % The preamble here sets up a lot of new/revised commands and
 % environments.  It's annoying, but please do *not* try to strip these
 % out into a separate .sty file (which could lead to the loss of some
@@ -62,7 +69,7 @@
 
 % Include your paper's title here
 
-\title{A simple {\it Science\/} Template} 
+\title{Dynamical Billiard} 
 
 
 % Place the author information here.  Please hand-code the contact
@@ -72,19 +79,19 @@
 % settings shown here.
 
 \author
-{John Smith,$^{1\ast}$ Jane Doe,$^{1}$ Joe Scientist$^{2}$\\
+{Yuanyuan Xu,$^{1\ast}$ Zhetao Jia,$^{1}$\\
 \\
-\normalsize{$^{1}$Department of Chemistry, University of Wherever,}\\
-\normalsize{An Unknown Address, Wherever, ST 00000, USA}\\
-\normalsize{$^{2}$Another Unknown Address, Palookaville, ST 99999, USA}\\
+\normalsize{$^{1}$Department of Physics, Duke University}\\
 \\
-\normalsize{$^\ast$To whom correspondence should be addressed; E-mail:  jsmith@wherever.edu.}
+\normalsize{\url{yx82@duke.edu}}
 }
 
 % Include the date command, but leave its argument blank.
 
 \date{}
 
+\usepackage[backend=bibtex]{biblatex}
+\bibliography{ref}
 
 
 %%%%%%%%%%%%%%%%% END OF PREAMBLE %%%%%%%%%%%%%%%%
@@ -106,12 +113,7 @@
 % Place your abstract within the special {sciabstract} environment.
 
 \begin{sciabstract}
-  This document presents a number of hints about how to set up your
-  {\it Science\/} paper in \LaTeX\ .  We provide a template file,
-  \texttt{scifile.tex}, that you can use to set up the \LaTeX\ source
-  for your article.  An example of the style is the special
-  \texttt{\{sciabstract\}} environment used to set up the abstract you
-  see here.
+  We have explored the dynamical behaviors of a dynamical billiard introduced by Yakov Sinai by two-dimensional computational simulation. We show the chaotic behavior of Sinai's billiard and estimate the Lyapunov exponent. We also prove the ergodic property of Sinai's billiard. 
 \end{sciabstract}
 
 
@@ -127,260 +129,170 @@
 % suppress numbering.
 
 \section*{Introduction}
-
-In this file, we present some tips and sample mark-up to assure your
-\LaTeX\ file of the smoothest possible journey from review manuscript
-to published {\it Science\/} paper.  We focus here particularly on
-issues related to style files, citation, and math, tables, and
-figures, as those tend to be the biggest sticking points.  Please use
-the source file for this document, \texttt{scifile.tex}, as a template
-for your manuscript, cutting and pasting your content into the file at
-the appropriate places.
-
-{\it Science\/}'s publication workflow relies on Microsoft Word.  To
-translate \LaTeX\ files into Word, we use an intermediate MS-DOS
-routine \cite{tth} that converts the \TeX\ source into HTML\@.  The
-routine is generally robust, but it works best if the source document
-is clean \LaTeX\ without a significant freight of local macros or
-\texttt{.sty} files.  Use of the source file \texttt{scifile.tex} as a
-template, and calling {\it only\/} the \texttt{.sty} and \texttt{.bst}
-files specifically mentioned here, will generate a manuscript that
-should be eminently reviewable, and yet will allow your paper to
-proceed quickly into our production flow upon acceptance \cite{use2e}.
+Formally, a billiard is a dynamical system in which a particle alternates between motion in a straight line and specular reflections from a boundary~\cite{wiki:db}. {\bf Fig.~\ref{fig:1}} \footnote{Source: George Stamatiou, Wikipedia} shows the configuration of one kind of dynamical billiards and this billiard is introduced by Yakov Sinai. Sinai's billiard arises from studying the behavior of molecules in a so-called ideal gas. In this model, we view the gas as numerous tiny balls. The simplest case is two interacting disks moving inside a 2D box. We remove a disk from the center of the box by eliminating the center of mass. And then the system is reduced to a disk bouncing inside a square boundary and outside a circular boundary.
 
 
-\section*{Formatting Citations}
-
-Citations can be handled in one of three ways.  The most
-straightforward (albeit labor-intensive) would be to hardwire your
-citations into your \LaTeX\ source, as you would if you were using an
-ordinary word processor.  Thus, your code might look something like
-this:
-
-
-\begin{quote}
-\begin{verbatim}
-However, this record of the solar nebula may have been
-partly erased by the complex history of the meteorite
-parent bodies, which includes collision-induced shock,
-thermal metamorphism, and aqueous alteration
-({\it 1, 2, 5--7\/}).
-\end{verbatim}
-\end{quote}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.45\linewidth]{figures/SinaiBilliard}
+	\caption{Sinai's billiard}
+	\label{fig:1}
+\end{figure}
 
 
-\noindent Compiled, the last two lines of the code above, of course, would give notecalls in {\it Science\/} style:
+\section*{Computational Methods}
+Since the motion of a gas molecule between two successive collisions is on a straight-line, it is convenient to record the contact points on the boundary and the direction vector after each collision. Therefore, the sequence of the contact points on the boundary is given by
+\begin{equation}
+	S = \{(x_i , y_i, \theta _i) : i\in \mathcal{N} \}.
+\end{equation}
+And the direction vector after the collision is given by
+\begin{equation}
+	\mathbf{\hat{v}_{i}} = (\cos{\theta_i}, \sin{\theta_i}), \quad \theta_i \in (-\pi, \pi].
+\end{equation}
+Then, we can get the equation of the line along the direction vector at $(x_i, y_i)$:
+\begin{equation}
+	\tan(\theta_i)(x - x_i) + y_i - y = 0.
+\end{equation}
+If the circle is centered at the origin, then the distance from the origin to the line is given by
+\begin{equation}
+	d = \frac{|-\tan(\theta_i) x_i + y_i |}{\tan^{2}(\theta_i) + 1}.
+\end{equation}
+If $d \geq R$, where $R$ is the radius of the disk, then the next contact point is on the square boundary. Otherwise, the next contact point is on the circular boundary. We can use {\tt sympy.geometry.\\intersection(line, boundary)} to determine the next contact point $(x_{i+1}, y_{i+1})$. Suppose $\mathbf{\bf{T}}$ and $\mathbf{\bf{N}}$ are the unit tangent vector and unit normal vector of the boundary at $(x_{i+1}, y_{i+1})$. Then the direction vector after collision is given by
+\begin{equation}
+	\mathbf{\bf{\hat{v}_{i+1}}} = (\mathbf{\hat{v}_{i}}\cdot\mathbf{\bf{T}})\mathbf{\bf{T}} - (\mathbf{\hat{v}_{i}} \cdot \mathbf{\bf{N}})\mathbf{\bf{N}}.
+\end{equation} 
 
-\begin{quote}
-\ldots thermal metamorphism, and aqueous alteration ({\it 1, 2, 5--7\/}).
-\end{quote}
 
-Under the same logic, the author could set up his or her reference list as a simple enumeration,
+For two trajectories start with slightly different conditions, we can calculate the Lyapunov component by performing a linear fit on the semilog plot of $\delta(\mathbf{x})$ versus $t$. Since the motion of the ball is constrained by the boundary, we only do the curve fitting with the first few points as {\bf Fig.~\ref{fig:ly1}} shows. 
 
-\begin{quote}
-\begin{verbatim}
-{\bf References and Notes}
 
+The Python source code can be found online at~\url{https://github.com/whxuyuanyuan/PHYSICS513_Project}.
+
+\section*{Results}
+\subsection*{Lyapunov Exponent\footnote{In this section, we use $R / L = 0.25$, where $R$ is the radius of the circular boundary and $L$ is the length of the side of the square boundary.}}
+If two ball start with slightly different initial positions ($\| \delta_0 \| = 10^{-5}$) and we perform a linear fit on the semilog plot of $\delta(t)$ versus $t$ ({\bf Fig.~\ref{fig:ly1}}), then we can get $\lambda \approx 0.43$.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/Lyapunov_1}
+	\caption{}
+	\label{fig:ly1}
+\end{figure}
+{\bf Fig.~\ref{fig:ly2}} shows a small change in initial directions ($\| \delta_0) \| = 10^{-5}$) and we obtain $\lambda \approx 0.440$.  
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=0.65\linewidth]{figures/Lyapunov_2}
+	\caption{}
+	\label{fig:ly2}
+\end{figure}
+
+Hence, we confirm the chaotic behavior of Sinai's billiard by numerical method.
+
+\subsection*{Transition To Chaotic Motion}
+If the radius of the disk $R = 0$, then the billiard becomes an integrable system. {\bf Fig.~\ref{fig:r0_1}} shows the trajectory of the gas molecule and {\bf Fig.~\ref{fig:r0_2}} shows that the deviation of two balls with slightly different initial conditions is a linear function of time.
+
+When $R$ is increased to $0.1$, the trajectory of the gas molecule looks like {\bf Fig.~\ref{fig:r01_1}} and the deviation of two neighboring trajectories separate exponentially after the first collision with the circular boundary as shown in {\bf Fig.~\ref{fig:r01_2}}.
+
+Actually, the emergence of the inner boundary makes the billiard become a dispersing system. And all of the chaotic properties appear due to the dispersing boundary. 
+
+Surprisingly, even if the system still shows quite good symmetry property(four symmetry axis) and the area of center circle is so small compared with the available region, the system turns into chaos all of a sudden. 
+
+\begin{figure}[H] 
+  \begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{figures/r0}
+    \caption{}
+    \label{fig:r0_1}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/r0_ly}
+    \caption{}
+    \label{fig:r0_2}
+  \end{subfigure}
+  \caption{$R = 0$}
+\end{figure}
+
+\begin{figure}[H] 
+  \begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{figures/r01}
+    \caption{}
+    \label{fig:r01_1}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/r01_ly}
+    \caption{}
+    \label{fig:r01_2}
+  \end{subfigure}
+  \caption{$R = 0.1$}
+\end{figure}
+
+
+
+\subsection*{Ergodicity}
+
+For the model of a ball bouncing around elastically inside a bounded region, the system can be classified as integrable and chaotic. 
+We observe that as the bouncing time goes large enough, the trajectory tends to cover the entire plane, which is an evidence that there is no periodic motion. The following figure shows the trajectories after bouncing 1000 and 10000 times.
+
+\begin{figure}[H] 
+  \begin{subfigure}[b]{0.45\textwidth}
+    \includegraphics[width=\textwidth]{figures/1000_hits.png}
+    \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{figures/10000_hits.png}
+    \caption{}
+  \end{subfigure}
+\end{figure}
+
+
+To further analyze the ergodic property of the system, we sample circles of random sizes at random position inside the available region. Those circles are required to have no overlap with the center circle or any region outside the square. Then we sum over the length of trajctory lines that intersect with the circle and the sum is divided by the area of the circle. We expect this ratio to be constant as the sample size gets to infinity if the trajectory is uniformly distributed in available region as bouncing times become large enough. The following figure shows a histogram for 300 circles are sampled.
+
+\begin{figure}[H] 
+  \begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{figures/sample.jpg}
+    \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.55\textwidth}
+    \includegraphics[width=\textwidth]{figures/histo.png}
+    \caption{}
+  \end{subfigure}
+\end{figure}
+
+The result shows most ratio centers around a certain value, despite of a little variance, verifies our guess of the uniform distribution of trajectories.
+
+
+\subsection*{Angle Map}
+
+Recall from the analysis of Lorentz equation, Lorentz map is introduced to show how the relation between of z-coordinate of two subsequent local maximum.\footnote{Figure 9.4.3 Strogatz} We record the angle information of every collision between the ball and  center circle. The angle $\theta$ is defined as shown in the figure in the range $[-\pi, \pi]$. The map of subsequent angles are shown in the following figure.
+
+\begin{figure}[H] 
+  \begin{subfigure}[b]{0.4\textwidth}
+    \includegraphics[width=\textwidth]{figures/theta.jpg}
+    \caption{}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/map.jpg}
+    \caption{}
+  \end{subfigure}
+\end{figure}
+
+One interesting observation is that many of the mapping points concentrated inside the region close to the diagonal line, which means two subsequent angles tend to 
+be close. 
+
+\section*{Conclusions}
 \begin{enumerate}
-\item G. Gamow, {\it The Constitution of Atomic Nuclei
-and Radioactivity\/} (Oxford Univ. Press, New York, 1931).
-\item W. Heisenberg and W. Pauli, {\it Zeitschr.\ f.\ 
-Physik\/} {\bf 56}, 1 (1929).
-\end{enumerate}
-\end{verbatim}
-\end{quote}
-
-\noindent yielding
-
-\begin{quote}
-{\bf References and Notes}
-
-\begin{enumerate}
-\item G. Gamow, {\it The Constitution of Atomic Nuclei and
-Radioactivity\/} (Oxford Univ. Press, New York, 1931).
-\item W. Heisenberg and W. Pauli, {\it Zeitschr.\ f.\ Physik} {\bf 56},
-1 (1929).
-\end{enumerate}
-\end{quote}
-
-That's not a solution that's likely to appeal to everyone, however ---
-especially not to users of B{\small{IB}}\TeX\ \cite{inclme}.  If you
-are a B{\small{IB}}\TeX\ user, we suggest that you use the
-\texttt{Science.bst} bibliography style file and the
-\texttt{scicite.sty} package, both of which we are downloadable from our author help site
-(http://www.sciencemag.org/about/authors/prep/TeX\_help/).  You can also
-generate your reference lists by using the list environment
-\texttt{\{thebibliography\}} at the end of your source document; here
-again, you may find the \texttt{scicite.sty} file useful.
-
-Whether you use B{\small{IB}}\TeX\ or \texttt{\{thebibliography\}}, be
-very careful about how you set up your in-text reference calls and
-notecalls.  In particular, observe the following requirements:
-
-\begin{enumerate}
-\item Please follow the style for references outlined at our author
-  help site and embodied in recent issues of {\it Science}.  Each
-  citation number should refer to a single reference; please do not
-  concatenate several references under a single number.
-\item Please cite your references and notes in text {\it only\/} using
-  the standard \LaTeX\ \verb+\cite+ command, not another command
-  driven by outside macros.
-\item Please separate multiple citations within a single \verb+\cite+
-  command using commas only; there should be {\it no space\/}
-  between reference keynames.  That is, if you are citing two
-  papers whose bibliography keys are \texttt{keyname1} and
-  \texttt{keyname2}, the in-text cite should read
-  \verb+\cite{keyname1,keyname2}+, {\it not\/}
-  \verb+\cite{keyname1, keyname2}+.
+	\item Sinai's billiard has a positive Lyapunov exponent.
+	\item There is a transition from integrable system to chaotic system at radius $R = 0$.
+	\item The trajectory covers the entire region and the ball has equal probability to show at any point in the region after a long enough time.	\item The mapping from one hit angle to the next shows concentration in the region where the two angles are close.
 \end{enumerate}
 
-\noindent Failure to follow these guidelines could lead
-to the omission of the references in an accepted paper when the source
-file is translated to Word via HTML.
 
-\section*{Handling Math, Tables, and Figures}
-
-Following are a few things to keep in mind in coding equations,
-tables, and figures for submission to {\it Science}.
-
-\paragraph*{In-line math.}  The utility that we use for converting
-from \LaTeX\ to HTML handles in-line math relatively well.  It is best
-to avoid using built-up fractions in in-line equations, and going for
-the more boring ``slash'' presentation whenever possible --- that is,
-for \verb+$a/b$+ (which comes out as $a/b$) rather than
-\verb+$\frac{a}{b}$+ (which compiles as $\frac{a}{b}$).  Likewise,
-HTML isn't tooled to handle certain overaccented special characters
-in-line; for $\hat{\alpha}$ (coded \verb+$\hat{\alpha}$+), for
-example, the HTML translation code will return [\^{}$(\alpha)$].
-Don't drive yourself crazy --- but if it's possible to avoid such
-constructs, please do so.  Please do not code arrays or matrices as
-in-line math; display them instead.  And please keep your coding as
-\TeX-y as possible --- avoid using specialized math macro packages
-like \texttt{amstex.sty}.
-
-\paragraph*{Displayed math.} Our HTML converter sets up \TeX\
-displayed equations using nested HTML tables.  That works well for an
-HTML presentation, but Word chokes when it comes across a nested
-table in an HTML file.  We surmount that problem by simply cutting the
-displayed equations out of the HTML before it's imported into Word,
-and then replacing them in the Word document using either images or
-equations generated by a Word equation editor.  Strictly speaking,
-this procedure doesn't bear on how you should prepare your manuscript
---- although, for reasons best consigned to a note \cite{nattex}, we'd
-prefer that you use native \TeX\ commands within displayed-math
-environments, rather than \LaTeX\ sub-environments.
-
-\paragraph*{Tables.}  The HTML converter that we use seems to handle
-reasonably well simple tables generated using the \LaTeX\
-\texttt{\{tabular\}} environment.  For very complicated tables, you
-may want to consider generating them in a word processing program and
-including them as a separate file.
-
-\paragraph*{Figures.}  Figure callouts within the text should not be
-in the form of \LaTeX\ references, but should simply be typed in ---
-that is, \verb+(Fig. 1)+ rather than \verb+\ref{fig1}+.  For the
-figures themselves, treatment can differ depending on whether the
-manuscript is an initial submission or a final revision for acceptance
-and publication.  For an initial submission and review copy, you can
-use the \LaTeX\ \verb+{figure}+ environment and the
-\verb+\includegraphics+ command to include your PostScript figures at
-the end of the compiled PostScript file.  For the final revision,
-however, the \verb+{figure}+ environment should {\it not\/} be used;
-instead, the figure captions themselves should be typed in as regular
-text at the end of the source file (an example is included here), and
-the figures should be uploaded separately according to the Art
-Department's instructions.
-
-
-\section*{What to Send In}
-
-What you should send to {\it Science\/} will depend on the stage your manuscript is in:
-
-\begin{itemize}
-\item {\bf Important:} If you're sending in the initial submission of
-  your manuscript (that is, the copy for evaluation and peer review),
-  please send in {\it only\/} a PostScript or PDF version of the
-  compiled file (including figures).  Please do not send in the \TeX\ 
-  source, \texttt{.sty}, \texttt{.bbl}, or other associated files with
-  your initial submission.  (For more information, please see the
-  instructions at our Web submission site,
-  http://www.submit2science.org/ .)
-\item When the time comes for you to send in your revised final
-  manuscript (i.e., after peer review), we require that you include
-  all source files and generated files in your upload.  Thus, if the
-  name of your main source document is \texttt{ltxfile.tex}, you
-  need to include:
-\begin{itemize}
-\item \texttt{ltxfile.tex}.
-\item \texttt{ltxfile.aux}, the auxilliary file generated by the
-  compilation.
-\item A PostScript file (compiled using \texttt{dvips} or some other
-  driver) of the \texttt{.dvi} file generated from
-  \texttt{ltxfile.tex}, or a PDF file distilled from that
-  PostScript.  You do not need to include the actual \texttt{.dvi}
-  file in your upload.
-\item From B{\small{IB}}\TeX\ users, your bibliography (\texttt{.bib})
-  file, {\it and\/} the generated file \texttt{ltxfile.bbl} created
-  when you run B{\small{IB}}\TeX.
-\item Any additional \texttt{.sty} and \texttt{.bst} files called by
-  the source code (though, for reasons noted earlier, we {\it
-    strongly\/} discourage the use of such files beyond those
-  mentioned in this document).
-\end{itemize}
-\end{itemize}
-
-% Your references go at the end of the main text, and before the
-% figures.  For this document we've used BibTeX, the .bib file
-% scibib.bib, and the .bst file Science.bst.  The package scicite.sty
-% was included to format the reference numbers according to *Science*
-% style.
-
-
-\bibliography{scibib}
-
-\bibliographystyle{Science}
-
-
-
-% Following is a new environment, {scilastnote}, that's defined in the
-% preamble and that allows authors to add a reference at the end of the
-% list that's not signaled in the text; such references are used in
-% *Science* for acknowledgments of funding, help, etc.
-
-\begin{scilastnote}
-\item We've included in the template file \texttt{scifile.tex} a new
-environment, \texttt{\{scilastnote\}}, that generates a numbered final
-citation without a corresponding signal in the text.  This environment
-can be used to generate a final numbered reference containing
-acknowledgments, sources of funding, and the like, per {\it Science\/}
-style.
-\end{scilastnote}
-
-
-
-
-% For your review copy (i.e., the file you initially send in for
-% evaluation), you can use the {figure} environment and the
-% \includegraphics command to stream your figures into the text, placing
-% all figures at the end.  For the final, revised manuscript for
-% acceptance and production, however, PostScript or other graphics
-% should not be streamed into your compliled file.  Instead, set
-% captions as simple paragraphs (with a \noindent tag), setting them
-% off from the rest of the text with a \clearpage as shown  below, and
-% submit figures as separate files according to the Art Department's
-% instructions.
-
-
-\clearpage
-
-\noindent {\bf Fig. 1.} Please do not use figure environments to set
-up your figures in the final (post-peer-review) draft, do not include graphics in your
-source code, and do not cite figures in the text using \LaTeX\
-\verb+\ref+ commands.  Instead, simply refer to the figure numbers in
-the text per {\it Science\/} style, and include the list of captions at
-the end of the document, coded as ordinary paragraphs as shown in the
-\texttt{scifile.tex} template file.  Your actual figure files should
-be submitted separately.
+\newpage
+\nocite{chernov2006chaotic, apl2014, backer2007quantum}
+\printbibliography
 
 
 
